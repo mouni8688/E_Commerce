@@ -4,11 +4,16 @@ import com.shopsphere.shopsphere.entity.Product;
 import com.shopsphere.shopsphere.entity.Category;
 import com.shopsphere.shopsphere.repository.CategoryRepository;
 import com.shopsphere.shopsphere.dto.ProductRequestDto;
+import com.shopsphere.shopsphere.dto.ProductResponseDto;
 import com.shopsphere.shopsphere.repository.ProductRepository;
 import com.shopsphere.shopsphere.service.ProductService;
-import org.springframework.stereotype.Service;
-import java.util.List;
+import com.shopsphere.shopsphere.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +23,17 @@ public class ProductSeviceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Product saveProduct(ProductRequestDto dto) {
+    public ProductResponseDto saveProduct(ProductRequestDto dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category Not found"));
         Product product = new Product();
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
@@ -34,7 +42,19 @@ public class ProductSeviceImpl implements ProductService {
         product.setImageUrl(dto.getImageUrl());
 
         product.setCategory(category);
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        return mapToDto(savedProduct);
+    }
+
+    private ProductResponseDto mapToDto(Product product) {
+        ProductResponseDto dto = new ProductResponseDto();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+
+        dto.setCategoryName(
+                product.getCategory().getName());
+        return dto;
     }
 
 }

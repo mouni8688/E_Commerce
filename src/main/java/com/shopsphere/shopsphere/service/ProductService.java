@@ -1,10 +1,12 @@
 package com.shopsphere.shopsphere.service;
-import com.shopsphere.shopsphere.entity.Product;
+
 import com.shopsphere.shopsphere.dto.ProductRequestDto;
+import com.shopsphere.shopsphere.dto.ProductResponseDto;
+
 import java.util.List;
 
 public interface ProductService {
-    List<Product>getAllProducts();
+    List<ProductResponseDto>getAllProducts();
    
-    Product saveProduct(ProductRequestDto dto);
+    ProductResponseDto saveProduct(ProductRequestDto dto);
 }
