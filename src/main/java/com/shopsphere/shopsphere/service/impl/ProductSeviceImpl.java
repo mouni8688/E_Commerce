@@ -9,7 +9,8 @@ import com.shopsphere.shopsphere.repository.ProductRepository;
 import com.shopsphere.shopsphere.service.ProductService;
 import com.shopsphere.shopsphere.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +24,26 @@ public class ProductSeviceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public List<ProductResponseDto> getAllProducts() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
+public Page<ProductResponseDto> getAllProducts(
+        int page,
+        int size,
+        String sortBy
+) {
+
+    Pageable pageable =
+            PageRequest.of(
+                    page,
+                    size,
+                    Sort.by(sortBy)
+            );
+
+    Page<Product> products =
+            productRepository.findAll(pageable);
+
+    return products.map(this::mapToDto);
+
+}
+
 
     @Override
     public ProductResponseDto saveProduct(ProductRequestDto dto) {
@@ -85,3 +100,13 @@ public class ProductSeviceImpl implements ProductService {
     }
 
 }
+
+
+
+    // @Override
+    // public List<ProductResponseDto> getAllProducts() {
+    //     List<Product> products = productRepository.findAll();
+    //     return products.stream()
+    //             .map(this::mapToDto)
+    //             .collect(Collectors.toList());
+    // }

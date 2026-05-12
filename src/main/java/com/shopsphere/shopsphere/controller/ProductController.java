@@ -7,6 +7,7 @@ import com.shopsphere.shopsphere.dto.ProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 @RestController
@@ -17,9 +18,32 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductResponseDto> getAllProducts() {
-        return productService.getAllProducts();
-    }
+
+public Page<ProductResponseDto> getAllProducts(
+
+        @RequestParam(defaultValue = "0")
+        int page,
+
+        @RequestParam(defaultValue = "5")
+        int size,
+
+        @RequestParam(defaultValue = "id")
+        String sortBy
+
+) {
+
+    return productService.getAllProducts(
+            page,
+            size,
+            sortBy
+    );
+
+}
+
+    // @GetMapping
+    // public List<ProductResponseDto> getAllProducts() {
+    //     return productService.getAllProducts();
+    // }
 
     @PostMapping
     public ProductResponseDto saveProduct(@Valid @RequestBody ProductRequestDto dto) {
