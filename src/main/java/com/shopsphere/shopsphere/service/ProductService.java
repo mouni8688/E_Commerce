@@ -6,7 +6,15 @@ import com.shopsphere.shopsphere.dto.ProductResponseDto;
 import java.util.List;
 
 public interface ProductService {
-    List<ProductResponseDto>getAllProducts();
-   
+    List<ProductResponseDto> getAllProducts();
+
     ProductResponseDto saveProduct(ProductRequestDto dto);
+
+    ProductResponseDto updateProduct(
+            Long id,
+            ProductRequestDto dto
+
+    );
+
+    void deleteProduct(Long id);
 }
